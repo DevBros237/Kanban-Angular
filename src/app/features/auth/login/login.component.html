@@ -1,0 +1,52 @@
+<div class="auth-wrapper">
+  <app-auth-header/>
+  <mat-card class="auth-card">
+    <mat-card-header>
+      <mat-card-title>Connexion</mat-card-title>
+      <mat-card-subtitle>Bon retour sur TaskFlow</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="email" />
+          @if (form.get('email')?.hasError('required')) {
+          <mat-error>Email requis</mat-error>
+          }
+          @if (form.get('email')?.hasError('email')) {
+          <mat-error>Email invalide</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Mot de passe</mat-label>
+          <input matInput formControlName="password" type="password" />
+          @if (form.get('password')?.hasError('required')) {
+          <mat-error>Mot de passe requis</mat-error>
+          }
+        </mat-form-field>
+
+        @if (error) {
+        <p class="error-msg">{{ error }}</p>
+        }
+
+        <button mat-flat-button color="primary" class="full-width submit-btn" type="submit"
+          [disabled]="form.invalid || loading">
+          @if (loading) {
+          <mat-spinner diameter="20" />
+          } @else {
+          Se connecter
+          }
+        </button>
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <p class="redirect">
+        Pas encore de compte ?
+        <a routerLink="/auth/register">S'inscrire</a>
+      </p>
+    </mat-card-actions>
+  </mat-card>
+</div>

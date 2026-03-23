@@ -1,6 +1,7 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { isPlatformBrowser } from '@angular/common';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { User, AuthResponse } from '../models/user.model';
 import { environment } from '../../../environments/environment';
@@ -8,6 +9,7 @@ import { environment } from '../../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http   = inject(HttpClient);
+  private readonly platformId = inject(PLATFORM_ID);
   private readonly router = inject(Router);
   private readonly API    = environment.apiUrl + '/auth';
 
@@ -37,33 +39,75 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('current_user');
+    this.removeFromStorage('access_token');
+    this.removeFromStorage('current_user');
     this.currentUserSubject.next(null);
     this.router.navigate(['/auth/login']);
   }
 
   getToken(): string | null {
-    return localStorage.getItem('access_token');
+    return this.readFromStorage('access_token');
   }
 
   fetchMe(): Observable<User> {
     return this.http.get<User>(`${this.API}/me`).pipe(
       tap(user => {
-        localStorage.setItem('current_user', JSON.stringify(user));
+        this.writeToStorage('current_user', JSON.stringify(user));
         this.currentUserSubject.next(user);
       })
     );
   }
 
   private handleAuth(token: string): void {
-    localStorage.setItem('access_token', token);
+    this.writeToStorage('access_token', token);
     // on récupère le profil complet juste après
     this.fetchMe().subscribe();
   }
 
   private getUserFromStorage(): User | null {
-    const raw = localStorage.getItem('current_user');
-    return raw ? JSON.parse(raw) : null;
+    const raw = this.readFromStorage('current_user');
+
+    if (!raw) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(raw) as User;
+    } catch {
+      this.removeFromStorage('current_user');
+      return null;
+    }
+  }
+
+  private readFromStorage(key: string): string | null {
+    const storage = this.getStorage();
+    return storage?.getItem(key) ?? null;
+  }
+
+  private writeToStorage(key: string, value: string): void {
+    this.getStorage()?.setItem(key, value);
+  }
+
+  private removeFromStorage(key: string): void {
+    this.getStorage()?.removeItem(key);
+  }
+
+  private getStorage(): Storage | null {
+    if (!isPlatformBrowser(this.platformId)) {
+      return null;
+    }
+
+    const storage = globalThis.localStorage;
+
+    if (
+      !storage ||
+      typeof storage.getItem !== 'function' ||
+      typeof storage.setItem !== 'function' ||
+      typeof storage.removeItem !== 'function'
+    ) {
+      return null;
+    }
+
+    return storage;
   }
 }
