@@ -13,27 +13,34 @@ export const routes: Routes = [
   },
 
   {
-    path: 'dashboard',
-    //canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/dashboard/dashboard.component').then(
-        m => m.DashboardComponent
-      ),
-  },
-
-  {
-    path: 'boards/:id',
+    path: '',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/board/board.component').then(m => m.BoardComponent),
+      import('./features/common/layout.component').then(m => m.LayoutComponent),
+    children: [
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
+      },
+      {
+        path: 'boards/:id',
+        loadComponent: () =>
+          import('./features/board/board.component').then(m => m.BoardComponent),
+      },
+      // {
+      //   path: 'profile',
+      //   loadComponent: () =>
+      //     import('./features/profile/profile.component').then(m => m.ProfileComponent),
+      // },
+      // {
+      //   path: 'admin',
+      //   canActivate: [roleGuard(UserRole.ADMIN)],
+      //   loadComponent: () =>
+      //     import('./features/admin/admin.component').then(m => m.AdminComponent),
+      // },
+    ],
   },
-
-  // {
-  //   path: 'admin',
-  //   canActivate: [authGuard, roleGuard(UserRole.ADMIN)],
-  //   loadComponent: () =>
-  //     import('./features/admin/admin.component').then(m => m.AdminComponent),
-  // },
 
   { path: '**', redirectTo: 'dashboard' },
 ];

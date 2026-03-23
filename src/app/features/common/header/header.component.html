@@ -1,0 +1,28 @@
+<header class="app-header">
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    @for (crumb of breadcrumbs(); track crumb.label; let last = $last) {
+    <span class="crumb" [class.active]="last">{{ crumb.label }}</span>
+    @if (!last) { <mat-icon class="crumb-sep">chevron_right</mat-icon> }
+    }
+  </div>
+
+  <!-- Actions -->
+  <div class="header-actions">
+    <button mat-icon-button matTooltip="Notifications">
+      <mat-icon [matBadge]="3" matBadgeColor="warn" matBadgeSize="small">
+        notifications
+      </mat-icon>
+    </button>
+
+    <button mat-icon-button matTooltip="Aide">
+      <mat-icon>help_outline</mat-icon>
+    </button>
+
+    <div class="header-avatar" [matTooltip]="user?.name ?? ''">
+      {{ initials() }}
+    </div>
+  </div>
+
+</header>

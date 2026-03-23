@@ -1,0 +1,50 @@
+<div class="shell" [class.sidenav-collapsed]="isLeftSidebarCollapsed()">
+
+  <aside class="sidenav">
+    <div class="sidenav-top">
+      <div class="logo-text" [class.hidden]="isLeftSidebarCollapsed()">TASKFLOW</div>
+      <button class="collapse-btn" mat-icon-button (click)="toggleCollapse()"
+              [matTooltip]="isLeftSidebarCollapsed() ? 'Expand' : 'Collapse'"
+              matTooltipPosition="right">
+        <mat-icon>{{ isLeftSidebarCollapsed() ? 'menu' : 'menu_open' }}</mat-icon>
+      </button>
+    </div>
+
+    <nav class="sidenav-nav">
+      @for (item of items; track item.routeLink) {
+        <a
+          class="sidenav-nav-link"
+          [routerLink]="item.routeLink"
+          routerLinkActive="active"
+          [matTooltip]="isLeftSidebarCollapsed() ? item.label : ''"
+          matTooltipPosition="right"
+        >
+          <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+          <span class="nav-label">{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+
+    <div class="sidenav-bottom">
+      <div class="user-block">
+        <div class="avatar">{{ initials() }}</div>
+        <div class="user-info">
+          <span class="user-name">{{ user()?.name }}</span>
+          <span class="user-role">{{ user()?.role }}</span>
+        </div>
+      </div>
+      <button class="logout-btn" mat-icon-button matTooltip="Déconnexion"
+              matTooltipPosition="right" (click)="logout()">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </div>
+  </aside>
+
+  <div class="main-area">
+    <app-header />
+    <main class="page-content">
+      <router-outlet />
+    </main>
+  </div>
+
+</div>
