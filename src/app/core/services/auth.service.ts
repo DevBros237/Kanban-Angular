@@ -2,7 +2,7 @@ import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, map, switchMap, tap } from 'rxjs';
 import { User, AuthResponse } from '../models/user.model';
 import { environment } from '../../../environments/environment';
 
@@ -28,21 +28,31 @@ export class AuthService {
 
   register(payload: { name: string; email: string; password: string }): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.API}/register`, payload).pipe(
-      tap(res => this.handleAuth(res.access_token))
+      tap(res => this.writeToStorage('access_token', res.access_token)),
+      switchMap(res => this.fetchMe().pipe(map(() => res)))
     );
   }
 
   login(payload: { email: string; password: string }): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.API}/login`, payload).pipe(
-      tap(res => this.handleAuth(res.access_token))
+      tap(res => this.writeToStorage('access_token', res.access_token)),
+      switchMap(res => this.fetchMe().pipe(map(() => res)))
     );
   }
 
   logout(): void {
-    this.removeFromStorage('access_token');
-    this.removeFromStorage('current_user');
-    this.currentUserSubject.next(null);
-    this.router.navigate(['/auth/login']);
+    this.http.post(`${this.API}/logout`, {}).subscribe({
+      next: () => {
+        // on ignore la réponse, même en cas d'erreur, on veut déconnecter l'utilisateur localement
+        this.removeFromStorage('access_token');
+        this.removeFromStorage('current_user');
+        this.currentUserSubject.next(null);
+        this.router.navigate(['/auth/login']);
+      },
+      error: () => {
+        throw new Error('Logout failed');
+      }
+    });
   }
 
   getToken(): string | null {
@@ -56,12 +66,6 @@ export class AuthService {
         this.currentUserSubject.next(user);
       })
     );
-  }
-
-  private handleAuth(token: string): void {
-    this.writeToStorage('access_token', token);
-    // on récupère le profil complet juste après
-    this.fetchMe().subscribe();
   }
 
   private getUserFromStorage(): User | null {

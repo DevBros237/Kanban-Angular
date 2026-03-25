@@ -1,0 +1,126 @@
+<div class="dashboard">
+  <main class="main-content">
+
+    <!-- Stats bar -->
+    <section class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-evolution">
+          <span class="stat-value">{{ boards().length }}</span>
+          @if (trend(); as t) {
+          <span class="trend" [class.trend-up]="t.boards > 0" [class.trend-down]="t.boards < 0">
+            <mat-icon>{{ trendIcon(t.boards) }}</mat-icon>
+            @if (t.boards !== 0) {<span>{{ t.boards > 0 ? '+' : '' }}{{ t.boards }}</span>}
+          </span>
+          }
+        </div>
+
+        <span class="stat-label">Boards</span>
+      </div>
+      <div class="stat-card">
+        <div class="stat-evolution">
+          <span class="stat-value">{{ totalTasks() }}</span>
+          @if (trend(); as t) {
+          <span class="trend" [class.trend-up]="t.total > 0" [class.trend-down]="t.total < 0">
+            <mat-icon>{{ trendIcon(t.total) }}</mat-icon>
+            @if (t.total !== 0) {<span>{{ t.total > 0 ? '+' : '' }}{{ t.total }}</span>}
+          </span>
+          }
+        </div>
+
+        <span class="stat-label">Tâches totales</span>
+      </div>
+      <div class="stat-card">
+        <div class="stat-evolution">
+
+          <span class="stat-value">{{ doneTasks() }}</span>
+          @if (trend(); as t) {
+          <span class="trend" [class.trend-up]="t.done > 0" [class.trend-down]="t.done < 0">
+            <mat-icon>{{ trendIcon(t.done) }}</mat-icon>
+            @if (t.done !== 0) {<span>{{ t.done > 0 ? '+' : '' }}{{ t.done }}</span>}
+          </span>
+          }
+        </div>
+        <span class="stat-label">Terminées</span>
+      </div>
+      <div class="stat-card accent">
+        <div class="stat-evolution">
+          <span class="stat-value">{{ completionRate() }}%</span>
+
+          @if (trend(); as t) {
+          <span class="trend" [class.trend-up]="t.rate > 0" [class.trend-down]="t.rate < 0">
+            <mat-icon>{{ trendIcon(t.rate) }}</mat-icon>
+            @if (t.rate !== 0) {<span>{{ t.rate > 0 ? '+' : '' }}{{ t.rate }}%</span>}
+          </span>
+          }
+        </div>
+        <span class="stat-label">Complétion</span>
+      </div>
+    </section>
+
+    <!-- Boards header -->
+    <div class="section-header">
+      <h2>Mes boards</h2>
+      <button mat-flat-button class="new-board" (click)="openCreateDialog()">
+        <mat-icon>add</mat-icon> Nouveau board
+      </button>
+    </div>
+
+    <!-- Loading -->
+    @if (loading()) {
+    <mat-progress-bar mode="indeterminate" />
+    }
+
+    <!-- Empty state -->
+    @if (!loading() && boards().length === 0) {
+    <div class="empty-state">
+      <mat-icon class="empty-icon">dashboard</mat-icon>
+      <p>Aucun board pour l'instant</p>
+      <button mat-flat-button color="primary" (click)="openCreateDialog()">
+        Créer mon premier board
+      </button>
+    </div>
+    }
+
+    <!-- Boards grid -->
+    <div class="boards-grid">
+      @for (board of boards(); track board.id) {
+      <mat-card class="board-card" (click)="goToBoard(board.id)">
+        <mat-card-header>
+          <mat-card-title>{{ board.title }}</mat-card-title>
+          <span class="spacer"></span>
+          <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="boardMenu"
+            [matMenuTriggerData]="{ board: board }">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </mat-card-header>
+
+        @if (board.description) {
+        <mat-card-content>
+          <p class="board-desc">{{ board.description }}</p>
+        </mat-card-content>
+        }
+
+        <mat-card-footer class="board-footer">
+          <span class="board-date">
+            Créé le {{ board.createdAt | date:'dd/MM/yyyy' }}
+          </span>
+          <div class="board-progress">
+            <mat-progress-bar mode="determinate" [value]="boardCompletion(board)" color="primary" />
+          </div>
+        </mat-card-footer>
+      </mat-card>
+      }
+    </div>
+
+  </main>
+</div>
+
+<!-- Board context menu -->
+<mat-menu #boardMenu="matMenu">
+  <ng-template matMenuContent let-board="board">
+    <button mat-menu-item (click)="deleteBoard(board)">
+      <mat-icon color="warn">delete</mat-icon>
+      <span>Supprimer</span>
+    </button>
+  </ng-template>
+</mat-menu>

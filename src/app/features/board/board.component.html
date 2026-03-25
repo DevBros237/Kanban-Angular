@@ -1,0 +1,67 @@
+<div class="board-wrapper">
+  <header class="board-header">
+    <div class="board-title-group">
+      <h1 class="board-title">{{ boardTitle }}</h1>
+      <span class="board-count">{{ totalTasks }} tâche{{ totalTasks !== 1 ? 's' : '' }}</span>
+    </div>
+    <button class="add-btn" (click)="openTaskDialog()">
+      <mat-icon>add</mat-icon> Nouvelle tâche
+    </button>
+  </header>
+
+  <div class="kanban-board">
+    @for (col of columns; track col.status) {
+    <div class="kanban-column">
+      <div class="col-header">
+        <div class="col-header-left">
+          <span class="col-dot" [style.background]="col.color"></span>
+          <span class="col-title">{{ col.label }}</span>
+        </div>
+        <span class="col-badge">{{ col.tasks.length }}</span>
+      </div>
+
+      <div class="task-list" cdkDropList [id]="col.status" [cdkDropListData]="col.tasks"
+        [cdkDropListConnectedTo]="connectedLists" (cdkDropListDropped)="onDrop($event)">
+        @for (task of col.tasks; track task.id) {
+        <mat-card class="task-card" cdkDrag (click)="openTaskDialog(task)">
+          <div class="priority-bar priority-{{task.priority}}"></div>
+          <mat-card-content>
+            <div class="card-top">
+              <p class="task-title">{{ task.title }}</p>
+              <span class="drag-handle" cdkDragHandle>
+                <mat-icon>drag_indicator</mat-icon>
+              </span>
+            </div>
+            @if (task.description) {
+            <p class="task-desc">{{ task.description }}</p>
+            }
+            <div class="task-meta">
+              <span class="priority-badge priority-badge-{{task.priority}}">
+                {{ priorityLabels[task.priority] ?? task.priority }}
+              </span>
+              @if (task.assignee) {
+              <div class="assignee-chip">
+                <span class="assignee-avatar">{{ task.assignee.name?.[0] ?? '?' }}</span>
+                <span>{{ task.assignee.name }}</span>
+              </div>
+              }
+            </div>
+          </mat-card-content>
+        </mat-card>
+        }
+
+        @if (col.tasks.length === 0) {
+        <div class="empty-col">
+          <mat-icon>inbox</mat-icon>
+          <span>Aucune tâche</span>
+        </div>
+        }
+      </div>
+
+      <button class="col-add-btn" (click)="openTaskDialog(undefined, col.status)">
+        <mat-icon>add</mat-icon> Ajouter
+      </button>
+    </div>
+    }
+  </div>
+</div>

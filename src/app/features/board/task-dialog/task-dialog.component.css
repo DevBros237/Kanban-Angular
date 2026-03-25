@@ -1,0 +1,130 @@
+    .dialog-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 20px 12px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .dialog-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .dialog-icon {
+      width: 36px;
+      height: 36px;
+      background: #111;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .dialog-icon mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+
+    .dialog-title {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 700;
+      color: #111;
+      letter-spacing: -0.3px;
+    }
+
+    .close-btn {
+      color: #aaa !important;
+      transition: color 0.15s;
+    }
+
+    .close-btn:hover {
+      color: #333 !important;
+    }
+
+    mat-dialog-content {
+      min-width: 440px;
+      padding: 16px 20px !important;
+    }
+
+    .full-width {
+      width: 100%;
+      margin-bottom: 4px;
+    }
+
+    .row-fields {
+      display: flex;
+      gap: 12px;
+    }
+
+    .half-width {
+      flex: 1;
+    }
+
+    mat-dialog-actions {
+      padding: 12px 20px 20px !important;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #f0f0f0;
+      margin: 0;
+      min-height: unset !important;
+    }
+
+    .actions-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .delete-btn {
+      color: #aaa !important;
+      font-size: 13px;
+      transition: color 0.15s;
+    }
+
+    .delete-btn:hover {
+      color: #e53935 !important;
+    }
+
+    .cancel-btn {
+      color: #666 !important;
+      font-size: 13px;
+    }
+
+    .save-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #111;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0 16px;
+      height: 38px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: opacity 0.2s;
+    }
+
+    .save-btn:hover:not(:disabled) {
+      opacity: 0.8;
+    }
+
+    .save-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .save-btn mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }

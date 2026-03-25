@@ -1,0 +1,68 @@
+<div class="dialog-header">
+  <div class="dialog-title-group">
+    <span class="dialog-icon"><mat-icon>{{ data.task ? 'edit' : 'add_task' }}</mat-icon></span>
+    <h2 class="dialog-title">{{ data.task ? 'Modifier la tâche' : 'Nouvelle tâche' }}</h2>
+  </div>
+  <button class="close-btn" mat-icon-button mat-dialog-close>
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<mat-dialog-content>
+  <form [formGroup]="form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Titre</mat-label>
+      <input matInput formControlName="title" placeholder="Nom de la tâche..." />
+      @if (form.get('title')?.hasError('required') && form.get('title')?.touched) {
+      <mat-error>Le titre est requis</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" rows="3" placeholder="Décrivez la tâche..."></textarea>
+    </mat-form-field>
+
+    <div class="row-fields">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Statut</mat-label>
+        <mat-select formControlName="status">
+          @for (s of statuses; track s.value) {
+          <mat-option [value]="s.value">{{ s.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Priorité</mat-label>
+        <mat-select formControlName="priority">
+          @for (p of priorities; track p.value) {
+          <mat-option [value]="p.value">{{ p.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Date limite</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="dueDate" placeholder="Choisissez une date" />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  @if (data.task) {
+  <button class="delete-btn" mat-button (click)="delete()">
+    <mat-icon>delete_outline</mat-icon> Supprimer
+  </button>
+  }
+  <div class="actions-right">
+    <button mat-button class="cancel-btn" mat-dialog-close>Annuler</button>
+    <button class="save-btn" (click)="save()" [disabled]="form.invalid">
+      <mat-icon>{{ data.task ? 'check' : 'add' }}</mat-icon>
+      {{ data.task ? 'Enregistrer' : 'Créer' }}
+    </button>
+  </div>
+</mat-dialog-actions>

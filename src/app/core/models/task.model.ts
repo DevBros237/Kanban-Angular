@@ -9,5 +9,5 @@ export interface Task {
   position: number;
   boardId: string;
   assignee?: { id: string; name: string };
-  dueDate?: string;
+  dueDate?: Date;
 }
