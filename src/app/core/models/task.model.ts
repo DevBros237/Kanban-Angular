@@ -7,7 +7,17 @@ export interface Task {
   status: TaskStatus;
   priority: TaskPriority;
   position: number;
-  boardId: string;
-  assignee?: { id: string; name: string };
+  board: {
+    title: string;
+    description: string;
+    id: number;
+  };
+  assignee: {
+    email: string;
+    password: string;
+    name: string;
+    // role: 'USER';
+    id: number;
+  };
   dueDate?: Date;
 }

@@ -1,7 +1,7 @@
 export interface Board {
-  id: string;
+  id: number;
   title: string;
   description?: string;
-  ownerId: string;
+  ownerId: number;
   createdAt: string;
 }

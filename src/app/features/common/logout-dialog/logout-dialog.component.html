@@ -1,0 +1,15 @@
+<div class="logout-dialog">
+  <div class="dialog-icon">
+    <mat-icon>logout</mat-icon>
+  </div>
+
+  <mat-dialog-content>
+    <h2 class="dialog-title">Déconnexion</h2>
+    <p class="dialog-message">Êtes-vous sûr de vouloir vous déconnecter ?</p>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button mat-stroked-button mat-dialog-close class="btn-cancel">Annuler</button>
+    <button mat-flat-button (click)="logout()" class="btn-confirm">Se déconnecter</button>
+  </mat-dialog-actions>
+</div>

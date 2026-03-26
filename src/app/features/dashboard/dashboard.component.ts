@@ -47,12 +47,13 @@ export class DashboardComponent implements OnInit {
   private readonly STATS_KEY     = 'dashboard_stats_snapshot';
 
   boards        = signal<Board[]>([]);
-  tasks         = signal<Task[]>([]);
+  statTasks     = signal<Task[]>([]);
+  boardTasks    = signal<Task[]>([]);
   loading       = signal(true);
   previousStats = signal<StatSnapshot | null>(null);
 
-  totalTasks     = computed(() => this.tasks().length);
-  doneTasks      = computed(() => this.tasks().filter(t => t.status === 'done').length);
+  totalTasks     = computed(() => this.statTasks().length);
+  doneTasks      = computed(() => this.statTasks().filter(t => t.status === 'done').length);
   completionRate = computed(() => {
     const total = this.totalTasks();
     if (!total) return 0;
@@ -79,12 +80,17 @@ export class DashboardComponent implements OnInit {
     }
 
     forkJoin({
-      boards: this.boardsService.getAll(),
+      boardMembers: this.boardsService.getByUser(Number(this.user!.id)),
       tasks:  this.taskService.getByUser(Number(this.user!.id)),
     }).subscribe({
-      next: ({ boards, tasks }) => {
+      next: ({ boardMembers, tasks }) => {
+        var boards: Board[] = [];
+        boardMembers.forEach(element => {
+          boards.push(element.board);
+        });
         this.boards.set(boards);
-        this.tasks.set(tasks);
+        this.statTasks.set(tasks);
+        this.boardTasks.set(tasks);
         this.loading.set(false);
         if (isPlatformBrowser(this.platformId)) {
           const done = tasks.filter(t => t.status === 'done').length;
@@ -117,7 +123,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  goToBoard(id: string): void {
+  goToBoard(id: number): void {
     this.router.navigate(['/boards', id]);
   }
 
@@ -131,7 +137,10 @@ export class DashboardComponent implements OnInit {
   }
 
   boardCompletion(board: Board): number {
-    return this.completionRate();
+    const boardTasks = this.boardTasks().filter(t => t.board.id === board.id);
+    if (!boardTasks.length) return 0;
+    const done = boardTasks.filter(t => t.status === 'done').length;
+    return Math.round((done / boardTasks.length) * 100);
   }
 
   logout(): void {

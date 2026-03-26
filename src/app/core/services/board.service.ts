@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Board } from '../models/board.model';
 import { environment } from '../../../environments/environment';
+import { BoardMember } from '../models/board-member.model';
 
 export interface CreateBoardDto {
   title: string;
@@ -21,11 +22,11 @@ export class BoardsService {
   private readonly http = inject(HttpClient);
   private readonly API  = environment.apiUrl + '/boards';
 
-  getAll(): Observable<Board[]> {
-    return this.http.get<Board[]>(this.API);
+  getByUser(userId: number): Observable<BoardMember[]> {
+    return this.http.get<BoardMember[]>(`${this.API}/user/${userId}`);
   }
 
-  getOne(id: string): Observable<Board> {
+  getOne(id: number): Observable<Board> {
     return this.http.get<Board>(`${this.API}/${id}`);
   }
 
@@ -33,15 +34,15 @@ export class BoardsService {
     return this.http.post<Board>(this.API, dto);
   }
 
-  update(id: string, dto: Partial<CreateBoardDto>): Observable<Board> {
+  update(id: number, dto: Partial<CreateBoardDto>): Observable<Board> {
     return this.http.patch<Board>(`${this.API}/${id}`, dto);
   }
 
-  delete(id: string): Observable<void> {
+  delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.API}/${id}`);
   }
 
-  getStats(id: string): Observable<BoardStats> {
+  getStats(id: number): Observable<BoardStats> {
     return this.http.get<BoardStats>(`${this.API}/${id}/stats`);
   }
 }
